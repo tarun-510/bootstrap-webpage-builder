@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Two-Color Light to Dark Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .palette {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .color-box {
+      width: 150px;
+      height: 150px;
+      margin: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #000;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5);
+      text-align: center;
+    }
+
+    .color-code {
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .color-section {
+      margin-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Two-Color Light to Dark Generator</h1>
+  <div class="color-section">
+    <label for="color1">Pick First Color: </label>
+    <input type="color" id="color1" value="#04765b">
+  </div>
+  <div class="color-section">
+    <label for="color2">Pick Second Color: </label>
+    <input type="color" id="color2" value="#8B0000">
+  </div>
+  <div class="color-section">
+    <label for="color3">Pick Third Color: </label>
+    <input type="color" id="color3" value="#000000">
+  </div>
+
+  <button onclick="generateGradient()">Generate Gradients</button>
+
+  <div class="palette" id="palette1"></div>
+  <div class="palette" id="palette2"></div>
+  <div class="palette" id="palette3"></div>
+
+  <script>
+    function generateGradient() {
+      const color1 = document.getElementById('color1').value;
+      const color2 = document.getElementById('color2').value;
+      const color3 = document.getElementById('color3').value;
+
+      const palette1 = document.getElementById('palette1');
+      const palette2 = document.getElementById('palette2');
+      const palette3 = document.getElementById('palette3');
+
+      palette1.innerHTML = '<h3>First Color Gradient</h3>';
+      palette2.innerHTML = '<h3>Second Color Gradient</h3>';
+      palette3.innerHTML = '<h3>Third Color Gradient</h3>';
+
+      generateColorGradient(color1, palette1);
+      generateColorGradient(color2, palette2);
+      generateColorGradient(color3, palette3);
+    }
+
+    function generateColorGradient(baseColor, paletteContainer) {
+      const hsl = hexToHSL(baseColor);
+
+      for (let i = 90; i >= 7; i -= 7) {
+        const hslColor = `hsl(${hsl.h}, ${hsl.s}%, ${i}%)`;
+        const rgb = hslToRGB(hsl.h, hsl.s, i);
+        const rgbColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+        const hexColor = rgbToHex(rgb.r, rgb.g, rgb.b);
+
+        const colorBox = document.createElement('div');
+        colorBox.className = 'color-box';
+        colorBox.style.backgroundColor = hslColor;
+        colorBox.style.color = i < 50 ? '#FFF' : '#000';
+        colorBox.innerHTML = `
+          <span class="color-code">HSL: ${hslColor}</span>
+          <span class="color-code">RGB: ${rgbColor}</span>
+          <span class="color-code">HEX: ${hexColor}</span>
+        `;
+        paletteContainer.appendChild(colorBox);
+      }
+    }
+
+    function hexToHSL(hex) {
+      hex = hex.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16) / 255;
+      const g = parseInt(hex.substring(2, 4), 16) / 255;
+      const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+
+      if (max === min) {
+        h = s = 0;
+      } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        h = Math.round(h * 60);
+      }
+
+      return {
+        h: h,
+        s: Math.round(s * 100),
+        l: Math.round(l * 100)
+      };
+    }
+
+    function hslToRGB(h, s, l) {
+      s /= 100;
+      l /= 100;
+
+      const c = (1 - Math.abs(2 * l - 1)) * s;
+      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      const m = l - c / 2;
+
+      let r = 0, g = 0, b = 0;
+
+      if (h >= 0 && h < 60) { r = c; g = x; b = 0; }
+      else if (h >= 60 && h < 120) { r = x; g = c; b = 0; }
+      else if (h >= 120 && h < 180) { r = 0; g = c; b = x; }
+      else if (h >= 180 && h < 240) { r = 0; g = x; b = c; }
+      else if (h >= 240 && h < 300) { r = x; g = 0; b = c; }
+      else if (h >= 300 && h < 360) { r = c; g = 0; b = x; }
+
+      r = Math.round((r + m) * 255);
+      g = Math.round((g + m) * 255);
+      b = Math.round((b + m) * 255);
+
+      return { r, g, b };
+    }
+
+    function rgbToHex(r, g, b) {
+      const toHex = (c) => c.toString(16).padStart(2, '0');
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    }
+  </script>
+</body>
+</html>

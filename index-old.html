@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Input Fields</title>
+    <link rel="stylesheet" href="draggable-resizable-modal/css/modalbox.css" type="text/css"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    
+    <link rel="stylesheet" href="css/styles.css">
+
+    
+
+    <!--<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />-->
+    <style>
+       
+        .row{
+            margin:2px 0px !important;
+        }
+        #inputContainer{
+            box-shadow: 0px 0px 11px #b3b3b3;
+            min-height: 300px;
+            
+            margin: 3px;
+        }
+
+        #inputContainer div{
+            border:2px solid gray;
+            padding:4px;                       
+        }
+        section{
+            position: relative;
+        }
+       .deletebtn{
+        position: absolute;
+        right: -25px;
+        top: 20px;
+        }
+        #inputContainer .row.selected-border{
+            border: 2px dotted rgb(159, 57, 218); /* Adjust the border size and color as needed */
+        }
+        #inputContainer div.selected-border{
+            border: 2px dotted rgb(159, 57, 218); /* Adjust the border size and color as needed */
+        }
+        .selected-border {
+            border: 2px dotted rgb(159, 57, 218); /* Adjust the border size and color as needed */
+        }
+
+        section{
+            border: 2px solid rgb(108, 218, 57);
+            padding:3px;
+        }
+
+        .selected-section-border{
+            border: 2px dotted rgb(108, 218, 57);
+        }
+        
+        
+        .sectionIcons{
+            position: fixed;
+            z-index: 120;
+            right: 16%;
+            top: 30%;
+        }
+        [contenteditable="true"]:focus {
+            border: 1px dotted blue; 
+            outline:none;
+        }
+
+        .mt-5{
+        position:relative;}
+
+        .mt-5::before{
+        content: '';
+        position: absolute;
+        z-index: 150;
+        background-color:rgb(255 102 0 / 12%);
+        pointer-events: none; 
+        height:50px;
+        width:100%;
+        top: -50px; /* Adjust according to your margin size */
+        left: 0; /* Adjust according to your margin size */
+        right: -0; /* Adjust according to your margin size */
+        bottom: 0; /* Adjust according to your margin size */        
+        }
+       
+
+        .myOwnDialog_overlay1{
+            background-color:rgb(58 58 58 / 16%) !important;
+        }
+        .titlebar div{
+            border: none !important;
+            padding:0px;
+        }
+        .titlebar{
+            border: none !important;
+        }
+
+        #myDialog3 div{
+            border: none !important;
+            padding:0px;
+        }
+        .titlebar_right .close{
+            margin: 0px;
+            font-size: 20px;
+        }
+
+        .CodeMirror div{
+            border: none !important;
+            
+        }
+
+    </style>
+</head>
+<body>
+    
+
+      <div class="sectionIcons d-flex flex-column gap-1 bg-primary rounded-2">
+        <button id="movetoTop" class="btn btn-sm btn-info">MT</button>
+        <button id="deleteme" class="btn btn-sm btn-info">D</buttom>
+        <button id="movetoNext" class="btn btn-sm btn-info">MN</button>
+      </div>
+
+    <div id="inputContainer" >        
+    </div> 
+
+<section class="container-fluid border-0" >
+    <div class="row border-0">
+
+    <div class="col-md-12 border-0">
+    
+    
+
+    <div class="d-flex justify-content-center border-0">
+        <button class="btn btn-primary btn-sm text-center"  id="dialogop3">
+            Add HTML elements
+        </button>
+    </div>
+
+        <div id="myDialog3" class="" style="border:1px solid gray; box-shadow: 0px 0px 11px #b3b3b3;">
+            <div class="container border-0">
+                <div class="row border-0">
+                    <div class="col-md-6 border-0">
+                        
+
+                    <div>
+                        
+                        <p><strong>Section and Layout</strong></p>
+                        <button id="FC" class="btn  btn-sm btn-outline-primary">FC</button>
+                        <button id="1C" class="btn  btn-sm btn-outline-primary">1C</button>
+                        <button id="2C" class="btn  btn-sm btn-outline-primary">2C</button>
+                        <button id="3C" class="btn  btn-sm btn-outline-primary">3C</button>
+                        <button id="4C" class="btn  btn-sm btn-outline-primary">4C</button>
+                        <button id="6C" class="btn  btn-sm btn-outline-primary">6C</button>
+                        <button id="spacer-for-md" class="btn  btn-sm btn-outline-primary">Space XL</button>
+                        
+                    </div>
+                    <p>
+                       
+                        
+                        <div class="">
+                            <small>Text</small> 
+                            <div class="d-flex flex-wrap gap-1 border-0">
+                            <button id="Paragraph" class="btn btn-sm  btn-primary">P</button>
+                            <button id="Small" class="btn btn-sm  btn-primary">Small</button>
+                            <button id="unorderedList" class="btn btn-sm  btn-info">List</button> 
+                            <button id="headingOne" class="btn  btn-sm btn-warning">H1</button>
+                            <button id="headingTwo" class="btn  btn-sm btn-warning">H2</button>
+                            <button id="headingThree" class="btn  btn-sm btn-warning">H3</button>
+                            <button id="headingFour" class="btn  btn-sm btn-warning">H4</button>
+                            <button id="headingFive" class="btn  btn-sm btn-warning">H5</button>
+                            <button id="headingSix" class="btn  btn-sm btn-warning">H6</button> 
+                            <button id="addImg" class="btn btn-sm btn-primary">Add Img</button>
+                            <button id="PrimaryButton" class="btn  btn-sm btn-primary">Primary Button</button>
+                            <button id="Iinfobutton" class="btn  btn-sm btn-info">Primary Button</button>
+                            </div> 
+
+                            <div class="textAlignments" style="display: none;">
+                                <small>Text Alignments</small>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-info" value="text-start">text-start</button>
+                                    <button class="btn btn-info" value="text-center">text-center</button>
+                                    <button class="btn btn-info" value="text-end">text-end</button>
+                                    <button class="btn btn-info" value="text-sm-start">text-sm-start</button>
+                                    <button class="btn btn-info" value="text-md-start">text-md-start</button>
+                                    <button class="btn btn-info" value="text-lg-start">text-lg-start</button>
+                                    <button class="btn btn-info" value="text-xl-start">text-xl-start</button>
+                                </div>
+                                <small>Text transform</small>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-info" value="text-lowercase">text-lowercase</button>
+                                    <button class="btn btn-info" value="text-uppercase">text-uppercase</button>
+                                    <button class="btn btn-info" value="text-capitalize">text-capitalize</button>
+                                    <button class="btn btn-info" value="text-wrap">text-wrap</button>
+                                    <button class="btn btn-info" value="text-nowrap">text-nowrap</button>
+                                </div>
+                                <small>Font Sizes</small>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-info" value="fs-1">fs-1</button>
+                                    <button class="btn btn-info" value="fs-2">fs-2</button>
+                                    <button class="btn btn-info" value="fs-3">fs-3</button>
+                                    <button class="btn btn-info" value="fs-4">fs-4</button>
+                                    <button class="btn btn-info" value="fs-5">fs-5</button>
+                                    <button class="btn btn-info" value="fs-6">fs-6</button>
+                                </div>
+                                <small>Text weight and italics</small>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-info" value="fw-bold">fw-bold</button>
+                                    <button class="btn btn-info" value="fw-normal">fw-normal</button>
+                                    <button class="btn btn-info" value="fw-light">fw-light</button>
+                                    <button class="btn btn-info" value="fw-lighter">fw-lighter</button>
+                                    <button class="btn btn-info" value="fst-italic">fst-italic</button>
+                                    <button class="btn btn-info" value="fst-normal">fst-normal</button>
+                                </div>
+                                <small>Text line height</small>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-info" value="lh-1">lh-1</button>
+                                    <button class="btn btn-info" value="lh-sm">lh-sm</button>
+                                    <button class="btn btn-info" value="lh-base">lh-base</button>
+                                    <button class="btn btn-info" value="lh-lg">lh-lg</button>
+                                </div>
+                                <small>Text Decorations</small>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-info" value="text-decoration-underline">text-decoration-underline</button>
+                                    <button class="btn btn-info" value="text-decoration-line-through">text-decoration-line-through</button>
+                                    <button class="btn btn-info" value="text-decoration-none">text-decoration-none</button>
+                                </div>
+                            </div>  
+                            
+                            
+                            <small>Appends to selected div</small>
+                            <div class="d-flex flex-wrap gap-1 border-0">
+                                <button id="insertDiv" class="btn btn-sm btn-primary">DIV</button>
+                                <button id="oneColumn" class="btn btn-sm btn-primary">1C</button>
+                                <button id="twoColumn" class="btn btn-sm btn-primary">2C</button>
+                                <button id="threeColumn" class="btn btn-sm btn-primary">3C</button>
+                                <button id="fourColumn" class="btn btn-sm btn-primary">4C</button>
+                                <button id="sixColumn" class="btn btn-sm btn-primary">6C</button> 
+                                <button id="spacer-for-md-append" class="btn btn-sm btn-primary">space XL</button>
+                                <button id="spacer-for-sm-append" class="btn btn-sm btn-primary">space L</button> 
+                            </div> 
+                        </div>
+                    
+                    </div>
+                    <div class="col-md-3">
+                        
+                        <div class="form-floating border-0">
+                            
+                            <textarea class="form-control" placeholder="Leave a comment here" id="classInput" style="height: 80px"></textarea>
+                            <label for="classInput">CSS Class names</label>
+                        </div>        
+                        
+                        <div class="text-center border-0">
+                            <button id="setClass" class="btn btn-sm btn-primary">Set class names to div</button>
+                        </div>
+                        
+                        
+
+                        <div id="anchorPropertiesDiv" class="border-0" style="display: none;"> 
+                            <div class="input-group mb-3 border-0">
+                              <input type="text" class="form-control" id="anchortagText" placeholder="click a link" aria-label="click a link" aria-describedby="updateLink">
+                              <input type="text" class="form-control" id="hreflink" placeholder="click a link" aria-label="click a link" aria-describedby="updateLink">
+                              <button class="btn btn-outline-secondary" type="button" id="updateLink">></button>
+                            </div>
+                            <div>
+                                <small>Button/Link classes</small>
+                                <textarea class="form-control">btn-primary | btn-secondary | btn-success | btn-danger | btn-warning | btn-info | btn-light | btn-dark | btn-link | btn-outline-primary | btn-outline-secondary | btn-outline-success | btn-outline-danger | btn-outline-warning | btn-outline-info | btn-outline-light | btn-outline-dark</textarea>
+                                <small>Button/Link sizes</small>
+                                <textarea class="form-control">btn-sm | btn-md | btn-lg</textarea>
+                                
+                            </div>
+                         </div>
+                         <div id="imgPropertiesDiv" class="" style="display: none;">       
+                            <div class=" mb-3 border-0">
+                                <div class="mb-1">
+                                <input type="text" class="form-control" id="imgAlt" placeholder="img alt tag">
+                                </div>
+                                <div class="mb-1">
+                                <input type="text" class="form-control" id="imgSrc" placeholder="click a link" aria-label="click a link" aria-describedby="updateLink">
+                                </div>
+                                <div class="mb-1">
+                                    <input type="text" class="form-control" id="imgWidth" placeholder="imgWidth" aria-label="click a link" aria-describedby="image width in px">
+                                </div>
+                                <button class="btn btn-primary" type="button" id="updateimgSrc">Update</button>
+                            </div>
+                         </div>
+                        
+                        
+                              
+                         
+                                 
+                           <div class="rowAlignments " style="display: none;">
+                            <p><strong>Applicalble only for row</strong></p>   
+                            <div class="d-flex flex-wrap gap-1">
+                              <button class="btn btn-info" value="d-flex justify-content-center"  id="alignMiddle" style="width:64px;">
+                                DF JC-center
+                              </button>
+                
+                              <button class="btn btn-info" value=" d-flex justify-content-start" id="justify-content-start" style="width:64px;">
+                                DF JC-start
+                              </button>
+                
+                              <button class="btn btn-info" value=" d-flex justify-content-end" id="justify-content-end" style="width:64px;">
+                                DF JC-end
+                              </button>
+                
+                              <button class="btn btn-info" value=" d-flex justify-content-between" id="justify-content-between" style="width:64px;">
+                                DF JC-between
+                              </button>
+                
+                              <button class="btn btn-info" value=" d-flex justify-content-around" id="justify-content-around" style="width:64px;">
+                                DF JC-around
+                              </button>
+                
+                              <button class="btn btn-info" value=" d-flex justify-content-evenly" id="justify-content-evenly" style="width:64px;">
+                                DF JC-evenly
+                              </button>   
+                            </div>         
+                            </div>
+                            <div class="colAlignments" style="display: none;">
+                              <p><strong>applicalble only for col</strong></p>
+                              <div class="d-flex flex-wrap gap-1">
+                              <button class="btn btn-info" value="d-flex align-self-start" id="align-self-start" style="width:64px;">
+                                align-self-start
+                              </button> 
+                              <button class="btn btn-info" value="d-flex align-self-end" id="align-self-end" style="width:64px;">
+                                align-self-end
+                              </button> 
+                              <button class="btn btn-info" value="d-flex align-self-center" id="align-self-center" style="width:64px;">
+                                align-self-center
+                              </button> 
+                              <button class="btn btn-info" value="d-flex align-self-baseline" id="align-self-baseline" style="width:64px;">
+                                align-self-baseline
+                              </button> 
+                              <button class="btn btn-info" value="d-flex align-self-stretch" id="align-self-stretch" style="width:64px;">
+                                align-self-stretch
+                              </button>  
+                            </div>
+                            </div>
+
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex justify-content-start">
+                        <div>
+                            <label for="bgColorpicker" class="form-label">BG color</label>
+                           <input type="color" class="form-control form-control-color" id="bgColorpicker" >
+                        </div>
+                        <div>
+                            <label for="txtColorpicker" class="form-label">Text color</label>
+                           <input type="color" class="form-control form-control-color" id="txtColorpicker" >
+                        </div>
+                     </div>
+                        
+                        <div class="mt-1 border-0">
+                               
+                            <table class="text-center" style="font-size: 10px; background-color: #fbe9d2; padding: 3px;">
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <select id="MarginTop">
+                                        <option value="">MT</option>
+                                        <option value="mt-0">0</option>
+                                        <option value="mt-1">1</option>
+                                        <option value="mt-2">2</option>
+                                        <option value="mt-3">3</option>
+                                        <option value="mt-4">4</option>
+                                        <option value="mt-5">5</option>
+                                        </select>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class="align-middle">
+                                        
+                                        <select id="MarginLeft">
+                                            <option value="">MS</option>
+                                            <option value="ms-0">0</option>
+                                            <option value="ms-1">1</option>
+                                            <option value="ms-2">2</option>
+                                            <option value="ms-3">3</option>
+                                            <option value="ms-4">4</option>
+                                            <option value="ms-5">5</option>
+                                        </select>
+                    
+                                    </td>
+                                    <td>
+                                        <table class=" text-center " style="background-color: #e6f7d8; padding: 3px;">
+                                            <tr>
+                                                <td></td>
+                                                <td>
+                                                    
+                                                    <select id="PaddingTop">
+                                                        <option value="">PT</option>
+                                                        <option value="pt-0">0</option>
+                                                        <option value="pt-1">1</option>
+                                                        <option value="pt-2">2</option>
+                                                        <option value="pt-3">3</option>
+                                                        <option value="pt-4">4</option>
+                                                        <option value="pt-5">5</option>
+                                                    </select>
+                    
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <select id="PaddingLeft">
+                                                    <option value="">PS</option>
+                                                    <option value="ps-0">0</option>
+                                                    <option value="ps-1">1</option>
+                                                    <option value="ps-2">2</option>
+                                                    <option value="ps-3">3</option>
+                                                    <option value="ps-4">4</option>
+                                                    <option value="ps-5">5</option>
+                                                    </select>
+                                                 </td>
+                                                <td>
+                                                    O
+                                                </td>
+                                                <td>
+                                                    
+                                                    <select id="PaddingRight">
+                                                        <option value="">PE</option>
+                                                        <option value="pe-0">0</option>
+                                                        <option value="pe-1">1</option>
+                                                        <option value="pe-2">2</option>
+                                                        <option value="pe-3">3</option>
+                                                        <option value="pe-4">4</option>
+                                                        <option value="pe-5">5</option>
+                                                    </select>
+                    
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td>
+                                                    
+                                                    <select id="PaddingBottom">
+                                                        <option value="">PB</option>
+                                                        <option value="pb-0">0</option>
+                                                        <option value="pb-1">1</option>
+                                                        <option value="pb-2">2</option>
+                                                        <option value="pb-3">3</option>
+                                                        <option value="pb-4">4</option>
+                                                        <option value="pb-5">5</option>
+                                                    </select>
+                    
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                
+                                        </table>
+                                    </td>
+                                    <td class="align-middle">
+                                        <select id="MarginRight">
+                                            <option value="">ME</option>
+                                            <option value="me-0">0</option>
+                                            <option value="me-1">1</option>
+                                            <option value="me-2">2</option>
+                                            <option value="me-3">3</option>
+                                            <option value="me-4">4</option>
+                                            <option value="me-5">5</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <select id="MarginBottom">
+                                            <option value="">MB</option>
+                                            <option value="mb-0">0</option>
+                                            <option value="mb-1">1</option>
+                                            <option value="mb-2">2</option>
+                                            <option value="mb-3">3</option>
+                                            <option value="mb-4">4</option>
+                                            <option value="mb-5">5</option>
+                                        </select>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                    
+                            </table>
+                            
+                          </div>
+                    </div>
+                </div>
+                
+
+            </div>
+            
+              
+        </div>
+
+
+
+        <div class="container-fluid border-0" style="margin-top: 30px;">
+            <button id="generateCode" class="btn btn-sm btn-secondary">Generate HTML & CSS</button>
+            <button id="setCode" class="btn btn-sm btn-secondary">setCode</button>
+            <button id="downloadHtml" class="btn btn-sm btn-primary" style="display:none;">Download HTML</button>
+            <textarea id="htmlCode" name="htmlCode" class="form-control mt-2" placeholder="HTML Code" rows="10" style="display: block;"></textarea>
+           
+        </div>
+       
+
+    </div>
+
+    </div>
+</section>
+
+<script src="js/script.js"></script>
+
+    
+    
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    // Set the default position to middle center
+    toastr.options = {
+        "positionClass": "toast-center-center", // Custom position class
+        "timeOut": "10000" // Duration the toast will stay visible
+    };
+    
+</script>
+
+<!-- Custom CSS to position Toastr in the center -->
+<style>
+    .toast-center-center {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        position: fixed;
+        margin: 0;
+        border:none;
+        z-index: 100;
+    }
+    .toast-title, .toast-message{
+        border:none;
+    }
+   
+</style>
+    <!-- 
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
+   
+    <script>
+      const quill = new Quill('#editor', {
+        theme: 'snow'
+      });
+    </script> -->
+
+    <script src="draggable-resizable-modal/js/modalbox.min.js" type="text/javascript"></script>
+	<script>
+
+        
+        $("#myDialog3").myOwnDialog(
+            {
+                autoClose:false,
+                width:"1200",
+                pos_y:"300",
+                height:"300",
+                bg_color:'white',
+                title:"HTML Components",
+                body_margin:"10",
+                body_overflow_x:"hidden",
+                body_overflow_y:"scroll",
+                movable:true,
+                resizable:true,
+                touchOutsideForClose:false
+            });
+       
+       
+        $("#dialogop3").click(function()
+        {
+            $("#myDialog3").myOwnDialog("open");
+        });
+       
+	</script>
+
+
+
+</body>
+</html>

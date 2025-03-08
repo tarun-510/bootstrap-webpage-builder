@@ -1,0 +1,37 @@
+.row, section, div {
+    position: relative; /* Ensure the parent div has a positioning context */
+}
+.row.selected-border::before {
+    content: 'row';
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgb(159 57 218);
+    padding: 0px 6px;
+    font-size: 10px; 
+    color: rgb(255, 255, 255);
+    z-index: 100; 
+}
+div.selected-border::before {
+    content: 'div';
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgb(52, 33, 156);
+    padding: 0px 6px;
+    font-size: 10px; 
+    color: rgb(255, 255, 255);
+    z-index: 100; 
+}
+
+section.selected-section-border::before {
+    content: 'Section';
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgb(26, 172, 34);
+    padding: 0px 6px;
+    font-size: 10px; 
+    color: rgb(255, 255, 255);
+    z-index: 100; 
+}

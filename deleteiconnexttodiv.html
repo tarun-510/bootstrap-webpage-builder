@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Div with Delete Button</title>
+    <style>
+        .container {
+            margin: 10px;
+            padding: 10px;
+            width:300px;
+            border: 1px solid #000;
+            display: inline-block;
+            position: relative;
+        }
+        .delete-btn {
+            display: none;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">Div 1</div>
+    <div class="container">Div 2</div>
+    <div class="container">Div 3</div>
+    <div class="container">Div 4</div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.container').click(function() {
+                // Remove any existing delete buttons
+                $('.delete-btn').remove();
+
+                // Create a new delete button
+                var deleteBtn = $('<button class="delete-btn">Delete</button>');
+
+                // Append the delete button to the clicked div
+                $(this).append(deleteBtn);
+
+                // Show the delete button
+                deleteBtn.show();
+
+                // Add click event to the delete button
+                deleteBtn.click(function(event) {
+                    event.stopPropagation(); // Prevent the click event from bubbling up to the div
+                    $(this).parent().remove(); // Remove the parent div
+                });
+            });
+        });
+    </script>
+</body>
+</html>
